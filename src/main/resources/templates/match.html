@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Smart Matcher')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="page-hero page-hero-match">
+  <div class="container text-center">
+    <div class="page-hero-badge">✨ AI-Powered</div>
+    <h1 class="page-hero-title">Smart Pet Matcher</h1>
+    <p class="page-hero-sub">Answer 5 questions and our algorithm finds your ideal pet with a compatibility score!</p>
+  </div>
+</section>
+<section class="section-gap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="match-form-card">
+          <div class="match-form-step" id="step-indicator">
+            <span class="mstep active" id="ms1">1</span>
+            <span class="mstep-line"></span>
+            <span class="mstep" id="ms2">2</span>
+            <span class="mstep-line"></span>
+            <span class="mstep" id="ms3">3</span>
+            <span class="mstep-line"></span>
+            <span class="mstep" id="ms4">4</span>
+            <span class="mstep-line"></span>
+            <span class="mstep" id="ms5">5</span>
+          </div>
+          <!-- Q1 -->
+          <div class="mq active" id="mq1">
+            <div class="mq-icon">🏠</div>
+            <div class="mq-title">Where do you live?</div>
+            <div class="mq-pills">
+              <div class="mpill" onclick="selectPill(this,'space')">🏢 Apartment</div>
+              <div class="mpill" onclick="selectPill(this,'space')">🏡 House with Yard</div>
+              <div class="mpill" onclick="selectPill(this,'space')">🛋️ Studio</div>
+            </div>
+            <button class="mq-next" onclick="nextQ(1)">Next <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <!-- Q2 -->
+          <div class="mq" id="mq2">
+            <div class="mq-icon">⚡</div>
+            <div class="mq-title">How would you describe your lifestyle?</div>
+            <div class="mq-pills">
+              <div class="mpill" onclick="selectPill(this,'lifestyle')">🏃 Active &amp; Energetic</div>
+              <div class="mpill" onclick="selectPill(this,'lifestyle')">😌 Calm &amp; Relaxed</div>
+              <div class="mpill" onclick="selectPill(this,'lifestyle')">⚖️ Balanced</div>
+            </div>
+            <button class="mq-next" onclick="nextQ(2)">Next <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <!-- Q3 -->
+          <div class="mq" id="mq3">
+            <div class="mq-icon">🌿</div>
+            <div class="mq-title">Do you have any allergies?</div>
+            <div class="mq-pills">
+              <div class="mpill" onclick="selectPill(this,'allergies')">✅ None</div>
+              <div class="mpill" onclick="selectPill(this,'allergies')">🐾 Pet fur/dander</div>
+              <div class="mpill" onclick="selectPill(this,'allergies')">🪶 Feathers</div>
+            </div>
+            <button class="mq-next" onclick="nextQ(3)">Next <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <!-- Q4 -->
+          <div class="mq" id="mq4">
+            <div class="mq-icon">🎓</div>
+            <div class="mq-title">What's your pet experience level?</div>
+            <div class="mq-pills">
+              <div class="mpill" onclick="selectPill(this,'experience')">🌱 First-time owner</div>
+              <div class="mpill" onclick="selectPill(this,'experience')">🌿 Some experience</div>
+              <div class="mpill" onclick="selectPill(this,'experience')">🌳 Experienced</div>
+            </div>
+            <button class="mq-next" onclick="nextQ(4)">Next <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <!-- Q5 -->
+          <div class="mq" id="mq5">
+            <div class="mq-icon">💰</div>
+            <div class="mq-title">Monthly pet care budget?</div>
+            <div class="mq-pills">
+              <div class="mpill" onclick="selectPill(this,'budget')">💵 Under ₹500</div>
+              <div class="mpill" onclick="selectPill(this,'budget')">💵 ₹500 – ₹2000</div>
+              <div class="mpill" onclick="selectPill(this,'budget')">💵 ₹2000 – ₹5000</div>
+              <div class="mpill" onclick="selectPill(this,'budget')">💵 Over ₹5000</div>
+            </div>
+            <button class="mq-submit" onclick="runMatch()">🔮 Find My Perfect Match!</button>
+          </div>
+        </div>
+      </div>
+      <!-- Results -->
+      <div class="col-lg-5" id="match-results-col" style="display:none">
+        <div class="match-results-card">
+          <div class="match-results-title">🎯 Your Top Matches</div>
+          <div id="match-result-list"></div>
+          <button class="restart-btn" onclick="restartMatch()">↩️ Try Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+<script>
+const prefs={};let currentQ=1;
+function selectPill(el,key){el.closest('.mq-pills').querySelectorAll('.mpill').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');prefs[key]=el.textContent.trim().replace(/^[^\w₹]+/,'').trim();}
+function nextQ(q){const pills=document.querySelectorAll(`#mq${q} .mpill`);const sel=[...pills].some(p=>p.classList.contains('selected'));if(!sel){alert('Please select an option to continue!');return;}document.getElementById('mq'+q).classList.remove('active');document.getElementById('mq'+(q+1)).classList.add('active');document.getElementById('ms'+q).classList.remove('active');document.getElementById('ms'+q).classList.add('done');document.getElementById('ms'+(q+1)).classList.add('active');currentQ=q+1;}
+function runMatch(){
+  const PETS=[{n:'Cat',e:'🐈',b:70,m:{Apartment:18,Studio:16,'Calm & Relaxed':15,None:9,'First-time owner':12},r:'Independent, low-maintenance, quiet indoors'},
+    {n:'Dog',e:'🐕',b:60,m:{'House with Yard':18,'Active & Energetic':20,None:8,Experienced:14},r:'Loyal, active companion — loves outdoor time'},
+    {n:'Fish',e:'🐠',b:75,m:{Apartment:14,Studio:18,'Calm & Relaxed':10,None:8,'First-time owner':14,'Pet fur/dander':18},r:'Zero-allergy, ultra low-maintenance, calming'},
+    {n:'Rabbit',e:'🐰',b:65,m:{Apartment:14,None:10,'Calm & Relaxed':8,'First-time owner':9},r:'Quiet, clean, surprisingly affectionate'},
+    {n:'Bird',e:'🦜',b:62,m:{Apartment:10,Balanced:10,None:8,'Some experience':10},r:'Intelligent, interactive, cheerful companion'},
+    {n:'Hamster',e:'🐹',b:72,m:{Apartment:16,Studio:18,'First-time owner':15,'Under ₹500':14},r:'Tiny, cute, self-contained starter pet'},
+    {n:'Turtle',e:'🐢',b:60,m:{Apartment:12,'Calm & Relaxed':14,None:8,'Some experience':10},r:'Long-lived, calm, very low noise and dander'}];
+  const vals=Object.values(prefs);
+  PETS.forEach(p=>{let s=p.b;vals.forEach(v=>{s+=(p.m[v]||0);});p.score=Math.min(99,Math.max(45,s+Math.floor(Math.random()*7)-3));});
+  PETS.sort((a,b)=>b.score-a.score);
+  const list=document.getElementById('match-result-list');
+  list.innerHTML='';
+  PETS.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='mresult-card';d.style.animationDelay=(i*0.1)+'s';
+    d.innerHTML=`<div class="mresult-emoji">${p.e}</div><div class="mresult-info"><div class="mresult-name">${p.n}${i===0?'<span class="best-badge">Best Match!</span>':''}</div><div class="mresult-reason">${p.r}</div><div class="mresult-bar-wrap"><div class="mresult-bar" style="width:0%" data-w="${p.score}%"></div></div></div><div class="mresult-pct">${p.score}%</div>`;
+    list.appendChild(d);
+  });
+  document.getElementById('match-results-col').style.display='block';
+  setTimeout(()=>{document.querySelectorAll('.mresult-bar').forEach(b=>b.style.width=b.dataset.w);},100);
+}
+function restartMatch(){location.reload();}
+</script>
+</body></html>

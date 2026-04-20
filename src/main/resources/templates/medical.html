@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Medical Center')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="page-hero page-hero-medical">
+  <div class="container text-center">
+    <div class="page-hero-badge">🏥 Health Hub</div>
+    <h1 class="page-hero-title">Pet Medical Center</h1>
+    <p class="page-hero-sub">Track vaccinations, view medical history, and book vet appointments all in one place.</p>
+  </div>
+</section>
+<section class="section-gap">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Pet Selector -->
+      <div class="col-lg-3">
+        <div class="filter-sidebar">
+          <div class="filter-sidebar-title">🐾 Select Pet</div>
+          <select class="form-select mt-2" id="pet-selector" onchange="loadPetMedical(this.value)">
+            <option value="">-- Choose a pet --</option>
+            <option th:each="pet : ${pets}" th:value="${pet.id}" th:text="${pet.name+' ('+pet.type+')'}">Max (Dog)</option>
+          </select>
+          <div class="mt-4">
+            <div class="filter-sidebar-title">👨‍⚕️ Doctors</div>
+            <div class="vet-card"><div class="vet-emoji">👨‍⚕️</div><div><div class="vet-name">Dr. Raj Kumar</div><div class="vet-spec">General &amp; Surgery</div></div></div>
+            <div class="vet-card"><div class="vet-emoji">👩‍⚕️</div><div><div class="vet-name">Dr. Priya Singh</div><div class="vet-spec">Dental &amp; Nutrition</div></div></div>
+            <div class="vet-card"><div class="vet-emoji">🧑‍⚕️</div><div><div class="vet-name">Dr. Amit Sharma</div><div class="vet-spec">Exotic Animals</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Medical Area -->
+      <div class="col-lg-9">
+        <div id="no-pet-msg" class="empty-state">
+          <div class="empty-emoji">🏥</div>
+          <h3>Select a pet to view medical records</h3>
+          <p>Choose a pet from the sidebar to view their health history, vaccinations and appointments.</p>
+        </div>
+        <div id="medical-content" style="display:none">
+          <!-- Vaccinations -->
+          <div class="med-panel">
+            <div class="med-panel-title"><i class="bi bi-shield-check text-success"></i> Vaccination Record</div>
+            <div id="vacc-list"><div class="text-muted text-center py-3">Loading...</div></div>
+          </div>
+          <!-- Book Appointment -->
+          <div class="med-panel mt-4" id="appt">
+            <div class="med-panel-title"><i class="bi bi-calendar-plus text-primary"></i> Book Appointment</div>
+            <div class="row g-3">
+              <div class="col-md-6"><label class="pc-label">Date</label><input type="date" class="pc-input" id="appt-date"/></div>
+              <div class="col-md-6"><label class="pc-label">Time</label>
+                <select class="pc-input" id="appt-time"><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option></select></div>
+              <div class="col-md-6"><label class="pc-label">Treatment</label>
+                <select class="pc-input" id="appt-type"><option>General Checkup</option><option>Vaccination</option><option>Dental Cleaning</option><option>Deworming</option><option>Surgery Consultation</option></select></div>
+              <div class="col-md-6"><label class="pc-label">Doctor</label>
+                <select class="pc-input" id="appt-doc"><option>Dr. Raj Kumar</option><option>Dr. Priya Singh</option><option>Dr. Amit Sharma</option></select></div>
+              <div class="col-12"><button class="pc-btn-primary-lg w-100" onclick="bookAppt()">📋 Confirm Appointment</button></div>
+            </div>
+            <div class="mt-4"><div class="med-panel-subtitle">Upcoming Appointments</div><div id="appt-list"></div></div>
+          </div>
+          <!-- Medical History -->
+          <div class="med-panel mt-4">
+            <div class="med-panel-title"><i class="bi bi-clipboard2-pulse text-warning"></i> Medical History</div>
+            <div id="med-history"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+<script>
+const DEMO_VACC={
+  '1':[{n:'Rabies',d:'2024-02-10',s:'done'},{n:'Distemper',d:'2024-02-10',s:'done'},{n:'Parvovirus',d:'2024-05-20',s:'done'},{n:'Leptospirosis',d:'2025-06-01',s:'due'},{n:'Bordetella',d:'2025-03-15',s:'overdue'}],
+  '2':[{n:'Rabies',d:'2024-08-01',s:'done'},{n:'FVRCP',d:'2024-08-01',s:'done'},{n:'FeLV',d:'2025-08-01',s:'due'}],
+};
+const DEMO_HIST={
+  '1':[{d:'2024-11-10',i:'Minor ear infection',t:'Antibiotic ear drops — 7 days'},{d:'2024-03-22',i:'Seasonal allergies',t:'Antihistamines prescribed'}],
+  '2':[{d:'2024-12-01',i:'Hairball treatment',t:'Laxatone administered, dietary adjustment'}],
+};
+const localAppts={};
+function loadPetMedical(id){
+  if(!id){document.getElementById('no-pet-msg').style.display='block';document.getElementById('medical-content').style.display='none';return;}
+  document.getElementById('no-pet-msg').style.display='none';document.getElementById('medical-content').style.display='block';
+  const vaccs=DEMO_VACC[id]||[{n:'General Health Check',d:'2024-06-01',s:'done'}];
+  const dotColor={done:'#22c55e',due:'#f59e0b',overdue:'#ef4444'};
+  document.getElementById('vacc-list').innerHTML=vaccs.map(v=>`<div class="vacc-row"><span class="vacc-dot" style="background:${dotColor[v.s]}"></span><span class="vacc-name">${v.n}</span><span class="vacc-badge vacc-${v.s}">${v.s.toUpperCase()}</span><span class="vacc-date">${v.d}</span></div>`).join('');
+  const hist=DEMO_HIST[id]||[{d:'2024-01-01',i:'Routine check',t:'All clear — healthy!'}];
+  document.getElementById('med-history').innerHTML=hist.map(h=>`<div class="hist-row"><div class="hist-issue">${h.i}</div><div class="hist-treat">🩺 ${h.t}</div><div class="hist-date">📅 ${h.d}</div></div>`).join('');
+  renderAppts(id);
+}
+function renderAppts(id){
+  const appts=localAppts[id]||[];
+  document.getElementById('appt-list').innerHTML=appts.length?appts.map(a=>`<div class="appt-row"><div class="appt-row-title">${a.type}</div><div class="appt-row-info">📅 ${a.date} · ⏰ ${a.time} · 👨‍⚕️ ${a.doc}</div></div>`).join(''):'<p class="text-muted small">No upcoming appointments.</p>';
+}
+function bookAppt(){
+  const id=document.getElementById('pet-selector').value;
+  const date=document.getElementById('appt-date').value;
+  if(!id){alert('Please select a pet first!');return;}
+  if(!date){alert('Please select a date!');return;}
+  if(!localAppts[id])localAppts[id]=[];
+  localAppts[id].push({date,time:document.getElementById('appt-time').value,type:document.getElementById('appt-type').value,doc:document.getElementById('appt-doc').value});
+  renderAppts(id);
+  showToast('✅ Appointment booked successfully!');
+}
+function showToast(msg){
+  let t=document.getElementById('pc-toast');
+  if(!t){t=document.createElement('div');t.id='pc-toast';t.className='pc-toast';document.body.appendChild(t);}
+  t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body></html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="section-gap">
+  <div class="container">
+    <div class="dash-header">
+      <div class="dash-avatar" th:text="${user.name.substring(0,1).toUpperCase()}">A</div>
+      <div><h2 class="dash-name" th:text="'Welcome back, '+${user.name}+'!'">Welcome!</h2><p class="dash-email" th:text="${user.email}">you@example.com</p></div>
+    </div>
+    <div class="row g-4 mt-2">
+      <div class="col-md-4"><div class="dash-stat-card"><div class="dsc-icon">🐾</div><div class="dsc-num" th:text="${adoptions.size()}">0</div><div class="dsc-label">Adoptions</div></div></div>
+      <div class="col-md-4"><div class="dash-stat-card"><div class="dsc-icon">📅</div><div class="dsc-num" th:text="${appointments.size()}">0</div><div class="dsc-label">Appointments</div></div></div>
+      <div class="col-md-4"><div class="dash-stat-card"><div class="dsc-icon">❤️</div><div class="dsc-num">98%</div><div class="dsc-label">Match Score</div></div></div>
+    </div>
+    <div class="row g-4 mt-2">
+      <div class="col-md-6">
+        <div class="dash-panel">
+          <div class="dash-panel-title">My Adoptions</div>
+          <div th:if="${adoptions.isEmpty()}" class="text-muted small py-3">No adoptions yet. <a href="/pets">Browse pets</a> to find your match!</div>
+          <div th:each="a : ${adoptions}" class="dash-adopt-row">
+            <span th:text="${a.pet.name+' ('+a.pet.type+')'}">Max (Dog)</span>
+            <span class="status-pill" th:text="${a.status}">PENDING</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="dash-panel">
+          <div class="dash-panel-title">Upcoming Appointments</div>
+          <div th:if="${appointments.isEmpty()}" class="text-muted small py-3">No appointments. <a href="/medical">Book one now!</a></div>
+          <div th:each="a : ${appointments}" class="dash-appt-row">
+            <span th:text="${a.treatmentType}">Checkup</span>
+            <span class="text-muted small" th:text="${a.appointmentDate}">2025-05-01</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-quick-actions mt-4">
+      <a href="/pets"    class="dqa-btn">🐾 Browse Pets</a>
+      <a href="/match"   class="dqa-btn">✨ Smart Match</a>
+      <a href="/medical" class="dqa-btn">🏥 Medical</a>
+      <a href="/enroll"  class="dqa-btn">➕ Enroll Pet</a>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body></html>

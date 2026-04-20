@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Home')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="hero-sky">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+    <div class="sun-orb"></div>
+  </div>
+  <div class="hero-ground">
+    <div class="walking-animal">🐕</div>
+    <div class="walking-animal-2">🐈</div>
+  </div>
+  <div class="char-stage container">
+    <div class="char-wrap" onclick="speakChar('dog')"><div class="char-emoji">🐕</div><div class="char-name">Max</div></div>
+    <div class="char-wrap" onclick="speakChar('cat')"><div class="char-emoji">🐈</div><div class="char-name">Luna</div></div>
+    <div class="char-wrap" onclick="speakChar('vet')"><div class="char-emoji">👨‍⚕️</div><div class="char-name">Dr. Raj</div></div>
+    <div class="char-wrap" onclick="speakChar('staff')"><div class="char-emoji">👩‍💼</div><div class="char-name">Priya</div></div>
+    <div class="char-wrap" onclick="speakChar('rabbit')"><div class="char-emoji">🐰</div><div class="char-name">Coco</div></div>
+  </div>
+  <div id="speech-bubble" class="speech-bubble">👋 Welcome to PetConnect! Find your perfect companion!</div>
+  <div class="hero-headline container text-center">
+    <div class="hero-badge">🐾 India's Smartest Pet Adoption Platform</div>
+    <h1 class="hero-title">Find Your <span class="hero-highlight">Perfect Pet</span><br>With AI Matching</h1>
+    <p class="hero-sub">Browse 500+ pets · Smart compatibility matching · Medical records · Appointments</p>
+    <div class="hero-btns">
+      <a href="/pets"  class="hbtn hbtn-primary">🐾 Browse Pets</a>
+      <a href="/match" class="hbtn hbtn-secondary">✨ Try Smart Match</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" th:text="${availableCount}+">50+</div><div class="hstat-label">Pets Available</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="hstat-num" th:text="${adoptedCount}+">200+</div><div class="hstat-label">Pets Adopted</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="hstat-num" th:text="${userCount}+">500+</div><div class="hstat-label">Happy Owners</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="hstat-num">98%</div><div class="hstat-label">Match Accuracy</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FILTER STRIP -->
+<section class="filter-strip">
+  <div class="container">
+    <div class="filter-strip-inner">
+      <a href="/pets" class="fchip fchip-all">🐾 All Pets</a>
+      <a href="/pets?type=Dog" class="fchip">🐕 Dogs</a>
+      <a href="/pets?type=Cat" class="fchip">🐈 Cats</a>
+      <a href="/pets?type=Rabbit" class="fchip">🐰 Rabbits</a>
+      <a href="/pets?type=Bird" class="fchip">🦜 Birds</a>
+      <a href="/pets?type=Fish" class="fchip">🐠 Fish</a>
+      <a href="/pets?type=Hamster" class="fchip">🐹 Hamsters</a>
+      <a href="/pets?type=Turtle" class="fchip">🐢 Turtles</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PETS -->
+<section class="section-gap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">🌟 Featured</div>
+      <h2 class="section-title">Pets Waiting for You</h2>
+      <p class="section-sub">Each one has a story. Could you be their happy ending?</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-6 col-md-4 col-lg-2" th:each="pet : ${recentPets}">
+        <div class="pet-card" th:onclick="|window.location='/pets/${pet.id}'|" style="cursor:pointer">
+          <div class="pet-card-top">
+            <div class="pet-emoji-bg">
+              <span class="pet-big-emoji" th:text="${pet.type=='Dog'?'🐕':pet.type=='Cat'?'🐈':pet.type=='Rabbit'?'🐰':pet.type=='Bird'?'🦜':pet.type=='Fish'?'🐠':pet.type=='Hamster'?'🐹':'🐢'}">🐾</span>
+            </div>
+            <span class="pet-status-badge" th:classappend="${pet.status.name()=='AVAILABLE'}?'badge-available':'badge-adopted'" th:text="${pet.status.name()=='AVAILABLE'}?'Available':'Adopted'">Available</span>
+          </div>
+          <div class="pet-card-body">
+            <div class="pet-card-name" th:text="${pet.name}">Max</div>
+            <div class="pet-card-breed" th:text="${pet.breed+' · '+pet.age}">Golden · 3y</div>
+            <div class="pet-card-tags">
+              <span class="ptag ptag-health" th:text="${pet.healthCondition}">Excellent</span>
+              <span class="ptag ptag-vacc"   th:text="${pet.vaccinationStatus}">Vaccinated</span>
+            </div>
+            <a th:href="@{/pets/{id}(id=${pet.id})}" class="pet-adopt-btn" th:classappend="${pet.status.name()!='AVAILABLE'}?'disabled-btn':''">
+              <span th:text="${pet.status.name()=='AVAILABLE'}?'Adopt Me 🐾':'Adopted ❤️'">Adopt Me</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a href="/pets" class="pc-btn-primary-lg">View All Pets <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-header"><div class="section-badge">🗺️ Process</div><h2 class="section-title">How PetConnect Works</h2></div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-3"><div class="step-card"><div class="step-num">01</div><div class="step-icon">📝</div><div class="step-title">Create Profile</div><p class="step-desc">Tell us about your lifestyle, home, and preferences.</p></div></div>
+      <div class="col-md-3"><div class="step-card"><div class="step-num">02</div><div class="step-icon">✨</div><div class="step-title">Get Matched</div><p class="step-desc">AI algorithm scores your compatibility with each pet.</p></div></div>
+      <div class="col-md-3"><div class="step-card"><div class="step-num">03</div><div class="step-icon">🐾</div><div class="step-title">Meet &amp; Adopt</div><p class="step-desc">Visit the shelter, meet your match, bring them home!</p></div></div>
+      <div class="col-md-3"><div class="step-card"><div class="step-num">04</div><div class="step-icon">💉</div><div class="step-title">Stay Healthy</div><p class="step-desc">Track vaccinations, book vet appointments anytime.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <div class="cta-emoji-row">🐕 🐈 🐰 🦜 🐠 🐹 🐢</div>
+      <h2 class="cta-title">Not Sure Which Pet is Right for You?</h2>
+      <p class="cta-sub">Our Smart Matching System analyses your lifestyle, space, allergies and budget to find your perfect companion — with a compatibility score!</p>
+      <a href="/match" class="hbtn hbtn-primary hbtn-lg">✨ Try Smart Matcher Now — Free!</a>
+    </div>
+  </div>
+</section>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+<script>
+const SPEECHES={dog:["Woof! I've been waiting for YOU! 🐾","Let's go for a walk! 🦮","You look like a dog person! 🐕"],cat:["Meow... I suppose you'll do. 😼","I don't need you. I WANT you.","Feed me, and I might let you pet me. 🐈"],vet:["All pets are health-checked! 💉","Schedule checkups — prevention is key! 🩺"],staff:["👩‍💼 Pets ready for adoption!","Every pet deserves a loving home! 🏠","Try the Smart Matcher! ✨"],rabbit:["🐰 Rabbits make amazing apartment pets!","Hop into our adoption center! 🐇","Low-maintenance AND adorable! 😄"]};
+let bt=null;
+function speakChar(ch){const msgs=SPEECHES[ch],msg=msgs[Math.floor(Math.random()*msgs.length)];const pos={dog:'8%',cat:'22%',vet:'38%',staff:'54%',rabbit:'70%'};const b=document.getElementById('speech-bubble');b.textContent=msg;b.style.left=pos[ch];b.classList.add('pop');b.style.opacity='1';if(bt)clearTimeout(bt);bt=setTimeout(()=>{b.style.opacity='0';},3000);}
+const ws=["👋 Welcome to PetConnect! Find your perfect companion!","🐾 50+ pets waiting for forever homes!","✨ Try Smart Matcher — 98% accuracy!","💉 All pets health-checked and vaccinated!"];let wi=0;
+setInterval(()=>{const b=document.getElementById('speech-bubble');b.style.opacity='0';setTimeout(()=>{b.textContent=ws[wi++%ws.length];b.style.opacity='1';},300);},4000);
+</script>
+</body></html>

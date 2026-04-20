@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Pet Detail')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="section-gap">
+  <div class="container" th:if="${pet != null}">
+    <a href="/pets" class="back-link"><i class="bi bi-arrow-left"></i> Back to all pets</a>
+    <div class="row g-5 mt-2">
+      <div class="col-md-5">
+        <div class="pet-detail-img-wrap">
+          <div class="pet-detail-emoji" th:text="${pet.type=='Dog'?'🐕':pet.type=='Cat'?'🐈':pet.type=='Rabbit'?'🐰':pet.type=='Bird'?'🦜':pet.type=='Fish'?'🐠':pet.type=='Hamster'?'🐹':'🐢'}">🐾</div>
+          <span class="pet-status-badge-lg" th:classappend="${pet.status.name()=='AVAILABLE'}?'badge-available':'badge-adopted'" th:text="${pet.status.name()=='AVAILABLE'}?'Available for Adoption':'Already Adopted'">Available</span>
+        </div>
+      </div>
+      <div class="col-md-7">
+        <div class="pet-detail-type" th:text="${pet.type}">Dog</div>
+        <h1 class="pet-detail-name" th:text="${pet.name}">Max</h1>
+        <p class="pet-detail-breed" th:text="${pet.breed+' · '+pet.age+' · '+pet.gender}">Golden Retriever · 3 years · Male</p>
+        <p class="pet-detail-desc" th:text="${pet.description}">Description</p>
+        <div class="pet-detail-meta">
+          <div class="meta-item"><div class="meta-label">Health</div><div class="meta-val" th:text="${pet.healthCondition}">Excellent</div></div>
+          <div class="meta-item"><div class="meta-label">Vaccination</div><div class="meta-val" th:text="${pet.vaccinationStatus}">Vaccinated</div></div>
+          <div class="meta-item"><div class="meta-label">Shelter</div><div class="meta-val" th:text="${pet.shelter!=null?pet.shelter.name:'Independent'}">DAWS</div></div>
+          <div class="meta-item"><div class="meta-label">Enrolled</div><div class="meta-val" th:text="${pet.enrolledDate}">2025-01-01</div></div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+          <a th:href="${pet.status.name()=='AVAILABLE'?'/dashboard':'/pets'}" class="pet-adopt-btn-lg" th:classappend="${pet.status.name()!='AVAILABLE'}?'disabled-btn':''">
+            <span th:text="${pet.status.name()=='AVAILABLE'}?'🐾 Request Adoption':'❤️ Already Adopted'">Adopt</span>
+          </a>
+          <a href="/medical" class="pc-btn-outline-lg"><i class="bi bi-heart-pulse"></i> Medical Records</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body></html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Enroll a Pet')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="page-hero page-hero-enroll">
+  <div class="container text-center">
+    <div class="page-hero-badge">➕ Shelter Staff</div>
+    <h1 class="page-hero-title">Enroll a New Pet</h1>
+    <p class="page-hero-sub">Add a pet to the adoption system and give them a chance at a forever home.</p>
+  </div>
+</section>
+<section class="section-gap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="enroll-card">
+          <form action="/api/pets" method="post" id="enroll-form">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="pc-label">Pet Name *</label>
+                <input type="text" class="pc-input" id="e-name" name="name" placeholder="e.g. Rocky" required/>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Species *</label>
+                <select class="pc-input" id="e-type" name="type">
+                  <option>Dog</option><option>Cat</option><option>Rabbit</option>
+                  <option>Bird</option><option>Fish</option><option>Hamster</option><option>Turtle</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Breed</label>
+                <input type="text" class="pc-input" name="breed" placeholder="e.g. Labrador"/>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Age</label>
+                <input type="text" class="pc-input" name="age" placeholder="e.g. 2 years"/>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Gender</label>
+                <select class="pc-input" name="gender"><option>Male</option><option>Female</option></select>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Health Condition</label>
+                <select class="pc-input" name="healthCondition"><option>Excellent</option><option>Good</option><option>Needs Treatment</option></select>
+              </div>
+              <div class="col-md-6">
+                <label class="pc-label">Vaccination Status</label>
+                <select class="pc-input" name="vaccinationStatus"><option>Vaccinated</option><option>Partial</option><option>Not Vaccinated</option><option>N/A</option></select>
+              </div>
+              <div class="col-12">
+                <label class="pc-label">Description for Adopters</label>
+                <textarea class="pc-input" name="description" rows="3" placeholder="Personality, habits, special needs, quirks..."></textarea>
+              </div>
+              <div class="col-12">
+                <label class="pc-label">Upload Pet Photo</label>
+                <div class="upload-zone" id="upload-zone">
+                  <div class="upload-icon">📷</div>
+                  <div class="upload-text">Click to upload or drag &amp; drop</div>
+                  <div class="upload-hint">PNG, JPG up to 10MB</div>
+                  <input type="file" id="pet-photo" accept="image/*" style="display:none" onchange="previewImage(this)"/>
+                </div>
+                <img id="img-preview" style="display:none;max-height:140px;border-radius:12px;margin-top:10px;" alt="preview"/>
+              </div>
+            </div>
+            <button type="button" class="pc-btn-primary-lg w-100 mt-4" onclick="submitEnroll()">🐾 Add Pet to Shelter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+<script>
+document.getElementById('upload-zone').onclick=()=>document.getElementById('pet-photo').click();
+function previewImage(input){if(input.files&&input.files[0]){const r=new FileReader();r.onload=e=>{const img=document.getElementById('img-preview');img.src=e.target.result;img.style.display='block';};r.readAsDataURL(input.files[0]);}}
+function submitEnroll(){
+  const name=document.getElementById('e-name').value.trim();
+  if(!name){alert('Please enter the pet name!');return;}
+  const pet={name,type:document.getElementById('e-type').value};
+  fetch('/api/pets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pet)})
+    .then(r=>{if(r.ok)window.location='/pets?enrolled=true';else alert('Error enrolling pet. Is the backend running?');})
+    .catch(()=>{showToast('✅ Pet added! (Demo mode — connect MySQL to persist)');setTimeout(()=>window.location='/pets',1500);});
+}
+function showToast(msg){let t=document.getElementById('pc-toast');if(!t){t=document.createElement('div');t.id='pc-toast';t.className='pc-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body></html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin Dashboard')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+<section class="section-gap">
+  <div class="container">
+    <div class="section-header"><div class="section-badge">🛡️ Admin</div><h2 class="section-title">Admin Dashboard</h2></div>
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="admin-stat orange"><div class="as-num" th:text="${totalPets}">0</div><div class="as-label">Total Pets</div></div></div>
+      <div class="col-6 col-md-3"><div class="admin-stat green"><div class="as-num" th:text="${available}">0</div><div class="as-label">Available</div></div></div>
+      <div class="col-6 col-md-3"><div class="admin-stat pink"><div class="as-num" th:text="${adopted}">0</div><div class="as-label">Adopted</div></div></div>
+      <div class="col-6 col-md-3"><div class="admin-stat blue"><div class="as-num" th:text="${totalUsers}">0</div><div class="as-label">Users</div></div></div>
+      <div class="col-6 col-md-3"><div class="admin-stat purple"><div class="as-num" th:text="${totalAdopt}">0</div><div class="as-label">Adoptions</div></div></div>
+      <div class="col-6 col-md-3"><div class="admin-stat yellow"><div class="as-num" th:text="${pendingAdopt}">0</div><div class="as-label">Pending</div></div></div>
+    </div>
+    <!-- Pets table -->
+    <div class="admin-panel">
+      <div class="admin-panel-title">All Pets</div>
+      <div class="table-responsive">
+        <table class="pc-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Breed</th><th>Status</th><th>Health</th><th>Shelter</th></tr></thead>
+          <tbody>
+            <tr th:each="p : ${allPets}">
+              <td th:text="${p.id}">1</td>
+              <td th:text="${p.name}">Max</td>
+              <td th:text="${p.type}">Dog</td>
+              <td th:text="${p.breed}">Golden</td>
+              <td><span class="status-pill" th:classappend="${p.status.name()=='AVAILABLE'}?'sp-green':p.status.name()=='ADOPTED'?'sp-pink':'sp-yellow'" th:text="${p.status}">AVAILABLE</span></td>
+              <td th:text="${p.healthCondition}">Excellent</td>
+              <td th:text="${p.shelter!=null?p.shelter.name:'-'}">DAWS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Users table -->
+    <div class="admin-panel mt-4">
+      <div class="admin-panel-title">All Users</div>
+      <div class="table-responsive">
+        <table class="pc-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th></tr></thead>
+          <tbody>
+            <tr th:each="u : ${allUsers}">
+              <td th:text="${u.id}">1</td>
+              <td th:text="${u.name}">Arjun</td>
+              <td th:text="${u.email}">arjun@ex.com</td>
+              <td><span class="status-pill" th:text="${u.role}">USER</span></td>
+              <td th:text="${u.phone}">9876543210</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body></html>

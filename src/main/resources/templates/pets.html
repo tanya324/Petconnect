@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Browse Pets')}"></head>
+<body class="pc-body">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<section class="page-hero page-hero-pets">
+  <div class="container text-center">
+    <div class="page-hero-badge">🏠 Adoption Center</div>
+    <h1 class="page-hero-title">Find Your Companion</h1>
+    <p class="page-hero-sub">Every pet here is health-checked, vaccinated, and ready to love you unconditionally.</p>
+    <form action="/pets" method="get" class="hero-search-bar">
+      <input type="text" name="search" placeholder="Search by name, breed, or type..." class="hero-search-input"/>
+      <button type="submit" class="hero-search-btn"><i class="bi bi-search"></i> Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="section-gap">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Sidebar filters -->
+      <div class="col-lg-3">
+        <div class="filter-sidebar">
+          <div class="filter-sidebar-title">🔍 Filter Pets</div>
+          <div class="filter-group">
+            <div class="filter-group-label">Species</div>
+            <a href="/pets" th:classappend="${currentType==null}?' flink-active':''">🐾 All Pets</a>
+            <a href="/pets?type=Dog"     th:classappend="${currentType=='Dog'}?'flink-active':''">🐕 Dogs</a>
+            <a href="/pets?type=Cat"     th:classappend="${currentType=='Cat'}?'flink-active':''">🐈 Cats</a>
+            <a href="/pets?type=Rabbit"  th:classappend="${currentType=='Rabbit'}?'flink-active':''">🐰 Rabbits</a>
+            <a href="/pets?type=Bird"    th:classappend="${currentType=='Bird'}?'flink-active':''">🦜 Birds</a>
+            <a href="/pets?type=Fish"    th:classappend="${currentType=='Fish'}?'flink-active':''">🐠 Fish</a>
+            <a href="/pets?type=Hamster" th:classappend="${currentType=='Hamster'}?'flink-active':''">🐹 Hamsters</a>
+            <a href="/pets?type=Turtle"  th:classappend="${currentType=='Turtle'}?'flink-active':''">🐢 Turtles</a>
+          </div>
+          <div class="filter-sidebar-cta">
+            <a href="/match" class="match-cta-btn">✨ Try Smart Matcher</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pet grid -->
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="results-count"><strong th:text="${pets.size()}">0</strong> pets found</div>
+        </div>
+        <div class="row g-4" th:if="${!pets.isEmpty()}">
+          <div class="col-sm-6 col-xl-4" th:each="pet : ${pets}">
+            <div class="pet-card pet-card-lg" th:onclick="|window.location='/pets/${pet.id}'|" style="cursor:pointer">
+              <div class="pet-card-top">
+                <div class="pet-emoji-bg pet-emoji-bg-lg">
+                  <span class="pet-big-emoji" th:text="${pet.type=='Dog'?'🐕':pet.type=='Cat'?'🐈':pet.type=='Rabbit'?'🐰':pet.type=='Bird'?'🦜':pet.type=='Fish'?'🐠':pet.type=='Hamster'?'🐹':'🐢'}">🐾</span>
+                </div>
+                <span class="pet-status-badge" th:classappend="${pet.status.name()=='AVAILABLE'}?'badge-available':'badge-adopted'" th:text="${pet.status.name()=='AVAILABLE'}?'Available':'Adopted'">Available</span>
+              </div>
+              <div class="pet-card-body">
+                <div class="pet-card-name" th:text="${pet.name}">Max</div>
+                <div class="pet-card-breed" th:text="${pet.breed+' · '+pet.age}">Golden · 3 years</div>
+                <p class="pet-card-desc" th:text="${pet.description}">Description</p>
+                <div class="pet-card-tags mb-2">
+                  <span class="ptag ptag-health" th:text="${pet.healthCondition}">Excellent</span>
+                  <span class="ptag ptag-vacc"   th:text="${pet.vaccinationStatus}">Vaccinated</span>
+                  <span class="ptag ptag-gender"  th:text="${pet.gender}">Male</span>
+                </div>
+                <a th:href="@{/pets/{id}(id=${pet.id})}" class="pet-adopt-btn" th:classappend="${pet.status.name()!='AVAILABLE'}?'disabled-btn':''">
+                  <span th:text="${pet.status.name()=='AVAILABLE'}?'View & Adopt 🐾':'Already Adopted ❤️'">Adopt Me</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div th:if="${pets.isEmpty()}" class="empty-state">
+          <div class="empty-emoji">🔍</div>
+          <h3>No pets found</h3>
+          <p>Try a different filter or <a href="/enroll">enroll a new pet</a>!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+</body></html>
